@@ -1,0 +1,12 @@
+# Interesting folders at home
+
+<folder> := 
+ ( Temp            = C:\Temp
+ | Downloads       = C:\Users\Jason\Downloads
+ | Documents	   = C:\Users\Jason\Documents
+ | Start Menu      = "C:\Documents and Settings\Rick Mohr\Start Menu"
+#### Voice   
+ | Vocola          = C:\Users\Jason\Dropbox\Personal\Vocola
+ | NatLink         = C:\NatLink\MacroSystem
+ | NatSpeak        = C:\NatSpeak\Users\Rick\current
+ );

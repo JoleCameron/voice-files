@@ -1,0 +1,180 @@
+#############################################################################
+#
+# Macros for creating and managing Gnuemacs buffers and windows #
+#
+#############################################################################
+
+include "gnuemacs.vch";
+
+include "letters.vch";
+include "numbers.vch";
+
+include "directories.vch";
+include "my_files.vch";
+
+
+##
+## Visiting files
+##
+## Note: switches to an existing buffer if file already visited
+##
+
+find file = {ctrl+x}{ctrl+f};
+# kill current buffer then find user-specified file:
+find alternate file = {ctrl+x}{ctrl+v};
+
+
+FindFile(prefix) := {ctrl+x}{ctrl+f} EraseToStart() $prefix;
+
+#
+# find a file in specified directory:
+#
+find <UNIX> = FindFile(UNIX($1 /));
+find <UNIX> / <COM> = FindFile(UNIX($1/$2 /));
+find <UNIX> / <COM> / <COM> = FindFile(UNIX($1/$2/$3/));
+
+find <PC> = FindFile(PC ($1 /));
+find <PC> / <COM> = FindFile(PC ($1/$2 /));
+find <PC> / <COM> / <COM> = FindFile(PC ($1/$2/$3/));
+
+
+# find-file the given file:
+buffer <my_files> = FindFile( $1{enter} );
+
+# find-file the given file then go to its end:
+buffer <my_files> end = FindFile( $1{enter} ) {esc}>;
+
+
+find file at point = {esc}x find-file-at-point {enter};
+
+
+##
+## Switching between existing buffers
+##
+
+switch-to-buffer = {ctrl+x}b;
+
+<my_buffers> := (shell = *shell* | reply = *mail*);
+<my_buffers> buffer = {ctrl+x}b $1 {enter};
+
+#
+# Switching to a buffer by how recently it was switched to:
+#
+
+Other Buffer = {Ctrl+x}b{Enter};
+
+# go to Nth most recently accessed buffer:
+<buffer_ord> := (
+third = 5
+| fourth = 6
+| fifth = 7
+| sixth = 8
+| seventh = 9
+| eighth = 10
+| ninth = 11
+);
+
+<buffer_ord> buffer = {esc}x buffer-menu{enter}
+"{esc}g$1{enter}"
+f {ctrl+x}b{enter} {esc}x bury-buffer{enter};
+
+#
+# Switching by menu choice:
+#
+
+# bring up a buffer menu for buffer selection:
+# (for housecleaning, 'k'=mark for deletion, 'x'=purge, '?'=help)
+buffer menu = {esc}x buffer-menu{enter};
+
+buffer menu <letter> = {esc}x buffer-menu{enter}
+{ctrl+x}{ctrl+q}
+{esc}x flush-lines{enter} '^....[^$1]{enter}'
+{ctrl+x}{ctrl+q};
+
+
+# after buffer menu, go to buffer displayed on line N:
+buffer <my0to99> = "{esc}g$1{enter}"
+{enter} {ctrl+x}b{enter} {esc}x bury-buffer{enter};
+
+
+# toggle selecting buffers interactively:
+# (for help, help key foxtrot then iswitchb)
+I. switch mode = {esc}x iswitchb-mode {enter};
+
+
+##
+## Writing out buffers
+##
+
+# save the contents of current buffer:
+save file = {ctrl+x}{ctrl+s};
+# save all modified file-visiting buffers:
+save all files = {ctrl+u}{esc}x save-some-buffers{enter};
+
+# write out current buffer to a new file:
+write file = {ctrl+x}{ctrl+w};
+
+
+##
+## Removing buffers
+##
+
+kill buffer = {ctrl+x}k{Enter};
+
+# put current buffer at end of list of buffers:
+bury buffer = {esc}x bury-buffer{enter};
+
+
+##
+## Altering various buffer properties
+##
+
+# toggle write protection of current buffer:
+write protect = {ctrl+x}{ctrl+q};
+
+toggle truncate = {esc}x toggle-truncate-lines {enter};
+
+use (DOS=dos|Unix=unix) encoding = {ctrl+x}{enter}f $1 {enter};
+
+# toggle auto-fill-mode for current buffer:
+auto fill mode = {esc}x auto-fill-mode{enter};
+
+shell script mode = {esc}x shell-script-mode {enter};
+
+
+##
+## Miscellaneous buffer management operations
+##
+
+please revert buffer = {esc}x revert-buffer{enter} yes{enter};
+
+# rename buffer (leaves associated file unchanged)
+rename buffer = {esc}x rename-buffer{enter};
+
+# rename a file (leaves any associated buffers unchanged)
+rename file = {esc}x rename-file{enter};
+
+
+##
+## Managing multiple windows
+##
+
+# split current window vertically into two:
+SplitWindow = {ctrl+x}2;
+
+other window = {ctrl+x}o;
+
+SingleWindow = {ctrl+x}1;
+# make other window the only window:
+other SingleWindow = {ctrl+x}o {Ctrl+x}1;
+
+
+
+
+
+#
+# Wish list:
+#
+# make file buffer is associated with executable
+# rotate very recent buffers operation instead of fourth buffer?
+#
