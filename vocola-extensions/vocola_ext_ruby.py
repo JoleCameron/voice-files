@@ -6,4 +6,4 @@ def classify(class_name):
 
 # Vocola function: Ruby.to_method
 def to_method(dictation):
-  return dictation.replace(" ", "_")
+  return dictation.lower().replace(" ", "_")
